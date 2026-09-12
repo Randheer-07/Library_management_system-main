@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>RESUME IQ - Resume Analyzer & Cover Letter Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#f0f2f5;--card:#ffffff;--txt:#1a1a2e;--txt2:#64748b;--pri:#6366f1;--pri-h:#4f46e5;--pri-l:#e0e7ff;--grn:#10b981;--red:#ef4444;--org:#f59e0b;--bdr:#e2e8f0;--sh:0 4px 24px rgba(0,0,0,.06)}
+        [data-theme="dark"]{--bg:#0f172a;--card:#1e293b;--txt:#f1f5f9;--txt2:#94a3b8;--pri:#818cf8;--pri-h:#6366f1;--pri-l:#1e1b4b;--bdr:#334155;--sh:0 4px 24px rgba(0,0,0,.3)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+        body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;transition:background .3s,color .3s;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+        img{max-width:100%;height:auto}
+
+        .container{width:100%;max-width:920px;margin:0 auto;padding:16px}
+
+        /* ===== HEADER ===== */
+        .header{text-align:center;padding:48px 20px 40px;background:linear-gradient(135deg,#6366f1 0%,#a855f7 50%,#ec4899 100%);border-radius:20px;margin-bottom:28px;position:relative;overflow:hidden}
+        .header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 60%);animation:pulse 4s ease-in-out infinite}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.1);opacity:1}}
+        .header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#fbbf24,#f472b6,#a78bfa,#34d399)}
+        .header h1{font-size:clamp(28px,7vw,52px);font-weight:900;color:#fff;letter-spacing:-1px;position:relative;z-index:1}
+        .header h1 span{background:linear-gradient(135deg,#fbbf24,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .header p{font-size:clamp(13px,2.5vw,18px);color:rgba(255,255,255,.85);margin-top:8px;position:relative;z-index:1;padding:0 12px}
+
+        /* ===== FLOATING SHAPES ===== */
+        .shapes{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;pointer-events:none}
+        .shape{position:absolute;border-radius:50%;opacity:.15;animation:float 6s ease-in-out infinite}
+        .shape:nth-child(1){width:80px;height:80px;background:#fbbf24;top:10%;left:10%;animation-delay:0s}
+        .shape:nth-child(2){width:60px;height:60px;background:#f472b6;top:60%;right:10%;animation-delay:2s}
+        .shape:nth-child(3){width:100px;height:100px;background:#34d399;bottom:10%;left:30%;animation-delay:4s}
+        @keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-20px) rotate(180deg)}}
+
+        /* ===== FEATURES SECTION ===== */
+        .features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+        .feature-card{background:var(--card);border-radius:14px;padding:24px 16px;text-align:center;border:1px solid var(--bdr);transition:all .3s;cursor:default}
+        .feature-card:hover{transform:translateY(-4px);box-shadow:var(--sh)}
+        .feature-card .feat-icon{font-size:36px;margin-bottom:10px;display:block;transition:transform .3s}
+        .feature-card:hover .feat-icon{transform:scale(1.2) rotate(-5deg)}
+        .feature-card h3{font-size:clamp(12px,2vw,15px);margin-bottom:4px;color:var(--txt)}
+        .feature-card p{font-size:clamp(10px,1.8vw,12px);color:var(--txt2);line-height:1.4}
+
+        /* ===== HOW IT WORKS ===== */
+        .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+        .step{background:var(--card);border-radius:14px;padding:24px 16px;text-align:center;border:1px solid var(--bdr);position:relative;transition:all .3s}
+        .step:hover{transform:translateY(-4px);box-shadow:var(--sh)}
+        .step-num{width:36px;height:36px;background:linear-gradient(135deg,var(--pri),#a855f7);color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;margin-bottom:12px}
+        .step h3{font-size:clamp(12px,2vw,15px);margin-bottom:4px;color:var(--txt)}
+        .step p{font-size:clamp(10px,1.8vw,12px);color:var(--txt2);line-height:1.4}
+        .step::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--pri);font-weight:bold}
+        .step:last-child::after{display:none}
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle{position:fixed;top:12px;right:12px;z-index:100;display:flex;align-items:center;gap:8px;background:var(--card);padding:6px 14px;border-radius:30px;box-shadow:var(--sh);border:1px solid var(--bdr);transition:all .3s}
+        .theme-toggle span{font-size:16px}
+        .switch{position:relative;width:46px;height:26px;cursor:pointer;flex-shrink:0}
+        .switch input{display:none}
+        .slider{position:absolute;inset:0;background:var(--bdr);border-radius:13px;transition:.3s}
+        .slider::before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+        .switch input:checked+.slider{background:var(--pri)}
+        .switch input:checked+.slider::before{transform:translateX(20px)}
+
+        /* ===== CARD ===== */
+        .card{background:var(--card);border-radius:16px;padding:clamp(16px,4vw,32px);box-shadow:var(--sh);margin-bottom:20px;border:1px solid var(--bdr);transition:all .3s}
+        .card:hover{box-shadow:0 8px 32px rgba(0,0,0,.1)}
+        .card h2{font-size:clamp(16px,3vw,20px);margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+        /* ===== UPLOAD ===== */
+        .upload-zone{border:2px dashed var(--bdr);border-radius:14px;padding:clamp(24px,6vw,48px) 16px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+        .upload-zone:hover,.upload-zone.over{border-color:var(--pri);background:var(--pri-l);transform:scale(1.01)}
+        .upload-zone .icon{font-size:clamp(36px,8vw,52px);margin-bottom:8px;display:block;transition:transform .3s}
+        .upload-zone:hover .icon{transform:scale(1.15) rotate(-5deg)}
+        .upload-zone h3{font-size:clamp(15px,3vw,18px);margin-bottom:4px}
+        .upload-zone p{color:var(--txt2);font-size:clamp(11px,2vw,13px);padding:0 8px}
+        .upload-zone input{display:none}
+        .browse-btn{margin-top:14px;display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border:2px solid var(--pri);color:var(--pri);border-radius:10px;font-weight:600;font-size:clamp(12px,2vw,14px);cursor:pointer;transition:all .3s;background:transparent}
+        .browse-btn:hover{background:var(--pri);color:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(99,102,241,.4)}
+
+        .file-bar{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid var(--grn);border-radius:12px;padding:12px 16px;margin-top:14px;animation:slideIn .3s ease}
+        @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+        .file-bar .icon{font-size:24px;flex-shrink:0}
+        .file-bar .fname{flex:1;font-weight:500;font-size:13px;word-break:break-all;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+        .file-bar .btn-x{background:var(--red);color:#fff;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:transform .2s;flex-shrink:0}
+        .file-bar .btn-x:hover{transform:scale(1.1)}
+
+        /* ===== TOGGLE CHIPS ===== */
+        .options-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+        .toggle-chip{display:flex;align-items:center;gap:6px;padding:7px 12px;background:var(--pri-l);border-radius:20px;font-size:clamp(11px,2vw,13px);font-weight:500;cursor:pointer;transition:all .3s;border:1px solid transparent;user-select:none;white-space:nowrap}
+        .toggle-chip:hover{border-color:var(--pri)}
+        .toggle-chip.active{background:var(--pri);color:#fff;border-color:var(--pri)}
+        .toggle-chip input{display:none}
+        .mini-switch{width:30px;height:16px;background:var(--bdr);border-radius:8px;position:relative;transition:.3s;flex-shrink:0}
+        .mini-switch::before{content:'';position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+        .toggle-chip.active .mini-switch{background:var(--pri-h)}
+        .toggle-chip.active .mini-switch::before{transform:translateX(14px)}
+
+        /* ===== TEXTAREA ===== */
+        .jd-group{margin-top:18px}
+        .jd-group label{display:block;font-weight:600;margin-bottom:8px;font-size:clamp(13px,2.5vw,15px)}
+        .jd-group textarea{width:100%;min-height:clamp(120px,25vw,180px);padding:12px;border:2px solid var(--bdr);border-radius:12px;font-size:clamp(13px,2.5vw,14px);font-family:inherit;resize:vertical;transition:.3s;background:var(--card);color:var(--txt)}
+        .jd-group textarea:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+        .jd-group .meta{display:flex;justify-content:space-between;font-size:clamp(10px,1.8vw,12px);color:var(--txt2);margin-top:6px}
+
+        /* ===== BUTTONS ===== */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border:none;border-radius:12px;font-size:clamp(13px,2.5vw,15px);font-weight:700;cursor:pointer;transition:all .3s;width:100%;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+        .btn::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.2);border-radius:50%;transform:translate(-50%,-50%);transition:width .4s,height .4s}
+        .btn:active::after{width:300px;height:300px}
+        .btn-pri{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff}
+        .btn-pri:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,.4)}
+        .btn-pri:active{transform:translateY(0)}
+        .btn-pri:disabled{background:linear-gradient(135deg,#9ca3af,#6b7280);cursor:not-allowed;transform:none;box-shadow:none}
+        .btn-sec{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+        .btn-sec:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,185,129,.4)}
+        .btn-sec:active{transform:translateY(0)}
+        .btn-out{background:transparent;border:2px solid var(--pri);color:var(--pri)}
+        .btn-out:hover{background:var(--pri);color:#fff;transform:translateY(-2px)}
+        .btn-out:active{transform:translateY(0)}
+        .btn-sm{padding:10px 20px;font-size:clamp(11px,2vw,13px);width:auto;border-radius:10px}
+        .btn-sm:active{transform:scale(.97)}
+
+        .spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .btn.loading .spinner{display:inline-block}
+        .btn.loading .txt{display:none}
+
+        /* ===== RESULTS ===== */
+        #results{display:none}
+
+        /* SCORE */
+        .score-wrap{text-align:center;margin-bottom:20px}
+        .score-ring{width:clamp(140px,30vw,170px);height:clamp(140px,30vw,170px);border-radius:50%;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;position:relative;transition:all .5s}
+        .score-ring::before{content:'';position:absolute;width:clamp(110px,24vw,140px);height:clamp(110px,24vw,140px);background:var(--card);border-radius:50%}
+        .score-ring .val{position:relative;font-size:clamp(36px,8vw,48px);font-weight:900}
+        .score-ring .lbl{position:relative;font-size:clamp(10px,2vw,12px);color:var(--txt2);font-weight:500}
+        .score-ring.green{background:conic-gradient(#10b981 0deg,#10b981 var(--deg),#e2e8f0 var(--deg))}
+        .score-ring.green .val{color:#10b981}
+        .score-ring.yellow{background:conic-gradient(#f59e0b 0deg,#f59e0b var(--deg),#e2e8f0 var(--deg))}
+        .score-ring.yellow .val{color:#f59e0b}
+        .score-ring.red{background:conic-gradient(#ef4444 0deg,#ef4444 var(--deg),#e2e8f0 var(--deg))}
+        .score-ring.red .val{color:#ef4444}
+
+        .breakdown{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
+        .bk-item{background:var(--bg);padding:10px 8px;border-radius:10px;border-left:3px solid var(--pri);transition:all .3s;text-align:center}
+        .bk-item:hover{transform:translateY(-2px)}
+        .bk-item h4{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px;font-weight:600;margin-bottom:2px}
+        .bk-item .num{font-size:clamp(16px,3vw,20px);font-weight:800;color:var(--pri)}
+        .bk-item .den{font-size:11px;color:var(--txt2)}
+
+        /* IMPROVEMENTS */
+        .imp-list{display:grid;gap:10px}
+        .imp-item{background:var(--bg);border-radius:12px;padding:16px;border-left:4px solid var(--org);transition:all .3s;animation:fadeSlide .4s ease forwards}
+        .imp-item:hover{transform:translateX(4px);box-shadow:0 4px 12px rgba(0,0,0,.05)}
+        .imp-item.high{border-left-color:var(--red)}
+        .imp-item.low{border-left-color:var(--grn)}
+        .imp-item h3{font-size:clamp(14px,2.5vw,16px);margin-bottom:4px}
+        .imp-item p{color:var(--txt2);font-size:clamp(11px,2vw,13px);margin-bottom:6px;line-height:1.5}
+        .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+        .badge.high{background:#fef2f2;color:var(--red)}
+        .badge.medium{background:#fffbeb;color:#d97706}
+        .badge.low{background:#ecfdf5;color:var(--grn)}
+        .kw-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+        .kw-tag{background:var(--pri-l);color:var(--pri);padding:3px 10px;border-radius:14px;font-size:10px;font-weight:600;transition:all .2s}
+        .kw-tag:hover{background:var(--pri);color:#fff}
+
+        @keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+        /* PREVIEW */
+        .preview-box{background:var(--bg);border-radius:12px;padding:16px;font-size:clamp(12px,2vw,13px);line-height:1.9;white-space:pre-wrap;max-height:280px;overflow-y:auto;margin-bottom:12px;border:1px solid var(--bdr);transition:all .3s;-webkit-overflow-scrolling:touch}
+        .preview-box::-webkit-scrollbar{width:5px}
+        .preview-box::-webkit-scrollbar-track{background:transparent}
+        .preview-box::-webkit-scrollbar-thumb{background:var(--pri);border-radius:3px}
+
+        /* FOOTER */
+        .footer{text-align:center;padding:28px 16px;color:var(--txt2);font-size:11px}
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:768px){
+            .container{padding:12px}
+            .header{padding:36px 16px 32px;border-radius:16px;margin-bottom:20px}
+            .features{grid-template-columns:1fr;gap:12px}
+            .steps{grid-template-columns:1fr;gap:12px}
+            .step::after{display:none}
+            .breakdown{grid-template-columns:repeat(3,1fr);gap:6px}
+            .theme-toggle{top:8px;right:8px;padding:5px 10px;gap:6px}
+            .theme-toggle span{font-size:14px}
+            .card{margin-bottom:14px}
+            .btn-sm{width:100%}
+        }
+
+        @media(max-width:480px){
+            .container{padding:10px}
+            .header{padding:28px 14px 24px;border-radius:14px;margin-bottom:16px}
+            .header h1{letter-spacing:-0.5px}
+            .header p{margin-top:4px}
+            .features{gap:10px}
+            .feature-card{padding:18px 12px}
+            .feature-card .feat-icon{font-size:28px}
+            .steps{gap:10px}
+            .step{padding:18px 12px}
+            .upload-zone{padding:28px 14px}
+            .options-row{gap:6px}
+            .toggle-chip{padding:5px 10px;font-size:10px;gap:4px}
+            .mini-switch{width:26px;height:14px}
+            .mini-switch::before{width:10px;height:10px}
+            .toggle-chip.active .mini-switch::before{transform:translateX(12px)}
+            .jd-group textarea{min-height:120px}
+            .breakdown{grid-template-columns:repeat(2,1fr)}
+            .bk-item{padding:8px 6px}
+            .imp-item{padding:12px}
+            .preview-box{max-height:240px;padding:14px}
+        }
+
+        @media(min-width:769px) and (max-width:1024px){
+            .container{max-width:800px}
+            .breakdown{grid-template-columns:repeat(5,1fr)}
+        }
+
+        @media(min-width:1025px){
+            .container{max-width:920px}
+        }
+
+        /* Touch-friendly hover states */
+        @media(hover:none){
+            .feature-card:hover,.step:hover,.card:hover,.bk-item:hover,.imp-item:hover{transform:none}
+            .browse-btn:hover{transform:none}
+            .btn:hover{transform:none}
+        }
+
+        /* Safe area for notch devices */
+        @supports(padding:env(safe-area-inset-top)){
+            .theme-toggle{top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right))}
+            .container{padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
+        }
+    </style>
+</head>
+<body>
+    <!-- THEME TOGGLE -->
+    <div class="theme-toggle">
+        <span id="themeIcon">&#9728;&#65039;</span>
+        <label class="switch">
+            <input type="checkbox" id="themeSwitch">
+            <span class="slider"></span>
+        </label>
+        <span>&#127761;</span>
+    </div>
+
+<div class="container">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <h1>RESUME <span>IQ</span></h1>
+        <p>Smart Resume Analysis &bull; ATS Optimization &bull; Cover Letter Generator</p>
+    </header>
+
+    <!-- FEATURES -->
+    <div class="features">
+        <div class="feature-card">
+            <span class="feat-icon">&#127919;</span>
+            <h3>ATS Score</h3>
+            <p>Get your resume's ATS compatibility score with detailed breakdown</p>
+        </div>
+        <div class="feature-card">
+            <span class="feat-icon">&#128161;</span>
+            <h3>Smart Suggestions</h3>
+            <p>AI-powered improvements to maximize your resume's potential</p>
+        </div>
+        <div class="feature-card">
+            <span class="feat-icon">&#128221;</span>
+            <h3>Cover Letter</h3>
+            <p>Auto-generate personalized cover letters for any job</p>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <h3>Upload Resume</h3>
+            <p>Upload your PDF, DOC, or DOCX resume</p>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <h3>Paste Job Description</h3>
+            <p>Paste the job posting you're applying for</p>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <h3>Get Results</h3>
+            <p>Download improved resume & cover letter</p>
+        </div>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="card" id="formCard">
+        <div class="upload-zone" id="dropZone">
+            <span class="icon">&#128196;</span>
+            <h3>Upload Your Resume</h3>
+            <p>Drag &amp; drop or click to browse &mdash; PDF, DOC, DOCX, TXT (max 10 MB)</p>
+            <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt">
+            <div class="browse-btn" id="browseBtn">&#128193; Browse Files</div>
+        </div>
+        <div class="file-bar" id="fileBar" style="display:none">
+            <span class="icon">&#9989;</span>
+            <span class="fname" id="fname"></span>
+            <button class="btn-x" id="clearFile">&times;</button>
+        </div>
+
+        <!-- OPTIONS -->
+        <div class="options-row">
+            <label class="toggle-chip active" data-opt="keywords">
+                <input type="checkbox" checked> Keywords
+                <span class="mini-switch"></span>
+            </label>
+            <label class="toggle-chip active" data-opt="suggestions">
+                <input type="checkbox" checked> Suggestions
+                <span class="mini-switch"></span>
+            </label>
+            <label class="toggle-chip active" data-opt="coverletter">
+                <input type="checkbox" checked> Cover Letter
+                <span class="mini-switch"></span>
+            </label>
+            <label class="toggle-chip active" data-opt="improved">
+                <input type="checkbox" checked> Improved Resume
+                <span class="mini-switch"></span>
+            </label>
+        </div>
+
+        <div class="jd-group">
+            <label for="jd">&#128221; Paste Job Description</label>
+            <textarea id="jd" placeholder="Paste the full job description here...&#10;&#10;Example: We are looking for a Software Engineer with 3+ years of experience in Python, JavaScript, and React..."></textarea>
+            <div class="meta">
+                <span id="charCnt">0 characters</span>
+                <span>Min 20 characters required</span>
+            </div>
+        </div>
+
+        <div style="margin-top:18px">
+            <button class="btn btn-pri" id="analyzeBtn" disabled>
+                <span class="txt">&#9889; Analyze Resume</span>
+                <div class="spinner"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results">
+        <div class="card" id="scoreCard" style="animation:fadeSlide .4s ease">
+            <h2>&#127919; ATS Compatibility Score</h2>
+            <div class="score-wrap">
+                <div class="score-ring" id="ring">
+                    <div class="val" id="scoreVal">0</div>
+                    <div class="lbl">out of 100</div>
+                </div>
+            </div>
+            <div class="breakdown" id="breakdown"></div>
+        </div>
+
+        <div class="card" id="impCard" style="animation:fadeSlide .5s ease">
+            <h2>&#128161; Improvements &amp; Suggestions</h2>
+            <div class="imp-list" id="impList"></div>
+        </div>
+
+        <div class="card" id="clCard" style="animation:fadeSlide .6s ease">
+            <h2>&#128221; Generated Cover Letter</h2>
+            <div class="preview-box" id="clPreview"></div>
+            <button class="btn btn-sec btn-sm" id="dlCL">&#128229; Download Cover Letter (.docx)</button>
+        </div>
+
+        <div class="card" id="resCard" style="animation:fadeSlide .7s ease">
+            <h2>&#9989; Improved Resume</h2>
+            <div class="preview-box" id="resPreview"></div>
+            <button class="btn btn-sec btn-sm" id="dlRes">&#128229; Download Improved Resume (.docx)</button>
+        </div>
+
+        <div style="margin-bottom:40px">
+            <button class="btn btn-out" id="resetBtn">&#128260; Analyze Another Resume</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>RESUME IQ &mdash; Your data is processed in-memory and never stored.</p>
+    </footer>
+</div>
+
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id)};
+
+    // THEME
+    var themeSwitch=$('themeSwitch'),themeIcon=$('themeIcon');
+    var saved=localStorage.getItem('riq-theme');
+    if(saved==='dark'){document.documentElement.setAttribute('data-theme','dark');themeSwitch.checked=true;themeIcon.textContent='\uD83C\uDF19'}
+    themeSwitch.addEventListener('change',function(){
+        var dark=themeSwitch.checked;
+        document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+        themeIcon.textContent=dark?'\uD83C\uDF19':'\u2600\uFE0F';
+        localStorage.setItem('riq-theme',dark?'dark':'light');
+    });
+
+    // TOGGLE CHIPS
+    document.querySelectorAll('.toggle-chip').forEach(function(chip){
+        chip.addEventListener('click',function(){
+            chip.classList.toggle('active');
+            var inp=chip.querySelector('input');
+            inp.checked=chip.classList.contains('active');
+        });
+    });
+
+    // FILE
+    var dropZone=$('dropZone'),fileInput=$('fileInput'),browseBtn=$('browseBtn');
+    var fileBar=$('fileBar'),fname=$('fname'),clearFile=$('clearFile');
+    var jd=$('jd'),charCnt=$('charCnt'),analyzeBtn=$('analyzeBtn');
+    var results=$('results');
+    var file=null,resultData=null;
+
+    browseBtn.addEventListener('click',function(e){e.stopPropagation();fileInput.click()});
+    dropZone.addEventListener('click',function(){fileInput.click()});
+    dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.classList.add('over')});
+    dropZone.addEventListener('dragleave',function(){dropZone.classList.remove('over')});
+    dropZone.addEventListener('drop',function(e){e.preventDefault();dropZone.classList.remove('over');if(e.dataTransfer.files.length)pickFile(e.dataTransfer.files[0])});
+    fileInput.addEventListener('change',function(e){if(e.target.files.length)pickFile(e.target.files[0])});
+    clearFile.addEventListener('click',function(e){e.stopPropagation();resetFile()});
+
+    function pickFile(f){
+        var ok=['.pdf','.doc','.docx','.txt'];
+        if(!ok.includes(f.name.slice(f.name.lastIndexOf('.')).toLowerCase())){alert('Only PDF, DOC, DOCX, TXT files allowed.');return}
+        if(f.size>10*1024*1024){alert('File too large (max 10 MB).');return}
+        file=f;fname.textContent=f.name;
+        dropZone.style.display='none';fileBar.style.display='flex';
+        checkReady();
+    }
+    function resetFile(){
+        file=null;fileInput.value='';
+        dropZone.style.display='';fileBar.style.display='none';
+        checkReady();
+    }
+
+    jd.addEventListener('input',function(){charCnt.textContent=jd.value.length+' characters';checkReady()});
+    function checkReady(){analyzeBtn.disabled=!(file&&jd.value.trim().length>=20)}
+
+    // OPTIONS
+    function getOpts(){
+        var opts={};
+        document.querySelectorAll('.toggle-chip').forEach(function(c){
+            opts[c.dataset.opt]=c.classList.contains('active');
+        });
+        return opts;
+    }
+
+    // ANALYZE
+    analyzeBtn.addEventListener('click',function(){
+        if(!file||jd.value.trim().length<20)return;
+        analyzeBtn.classList.add('loading');analyzeBtn.disabled=true;
+
+        var fd=new FormData();
+        fd.append('resume',file);
+        fd.append('jobDescription',jd.value);
+
+        fetch('/api/analyze',{method:'POST',body:fd})
+        .then(function(res){return res.json().then(function(json){return{ok:res.ok,json:json}})})
+        .then(function(r){
+            if(!r.ok)throw new Error(r.json.error||'Analysis failed');
+            resultData=r.json.data;
+            renderResults(resultData,getOpts());
+        })
+        .catch(function(err){alert('Error: '+err.message)})
+        .finally(function(){analyzeBtn.classList.remove('loading');analyzeBtn.disabled=false});
+    });
+
+    // RENDER
+    function renderResults(d,opts){
+        results.style.display='block';
+        renderScore(d.atsScore,d.atsBreakdown);
+        if(opts.suggestions)renderImps(d.improvements);else $('impCard').style.display='none';
+        if(opts.coverletter){renderCL(d.coverLetter);$('clCard').style.display=''}else $('clCard').style.display='none';
+        if(opts.improved){renderResume(d.improvedResume);$('resCard').style.display=''}else $('resCard').style.display='none';
+        setTimeout(function(){results.scrollIntoView({behavior:'smooth'})},100);
+    }
+
+    function renderScore(score,bk){
+        var ring=$('ring');
+        ring.style.setProperty('--deg',score*3.6+'deg');
+        ring.className='score-ring '+(score>=70?'green':score>=45?'yellow':'red');
+        $('scoreVal').textContent=score;
+        var bd=$('breakdown');bd.innerHTML='';
+        var labels={keywords:'Keywords',formatting:'Formatting',content:'Content',experience:'Experience',education:'Education'};
+        Object.keys(bk).forEach(function(k){
+            var s=bk[k];
+            bd.innerHTML+='<div class="bk-item"><h4>'+labels[k]+'</h4><span class="num">'+s.score+'</span><span class="den"> / '+s.max+'</span></div>';
+        });
+    }
+
+    function renderImps(ims){
+        var el=$('impList');el.innerHTML='';
+        if(!ims.length){el.innerHTML='<p style="color:var(--txt2)">No improvements needed!</p>';return}
+        ims.forEach(function(im,i){
+            var kw='';
+            if(im.keywords&&im.keywords.length){
+                kw='<div class="kw-tags">'+im.keywords.slice(0,8).map(function(k){return '<span class="kw-tag">'+k+'</span>'}).join('')+'</div>';
+            }
+            el.innerHTML+='<div class="imp-item '+im.priority+'" style="animation-delay:'+(i*0.1)+'s"><span class="badge '+im.priority+'">'+im.priority+'</span><h3>'+im.title+'</h3><p>'+im.description+'</p>'+(im.suggestion?'<p><b>Suggestion:</b> '+im.suggestion+'</p>':'')+kw+'</div>';
+        });
+    }
+
+    function renderCL(cl){$('clPreview').textContent=cl.fullText}
+
+    function renderResume(r){
+        var el=$('resPreview');el.innerHTML='';
+        el.innerHTML+='<div style="text-align:center;margin-bottom:14px"><b style="font-size:17px">'+r.name+'</b><br><span style="color:var(--txt2);font-size:13px">'+r.contact+'</span></div>';
+        if(r.summary)el.innerHTML+='<div style="margin-bottom:12px"><b style="text-decoration:underline;font-size:13px">PROFESSIONAL SUMMARY</b><p style="margin-top:4px">'+r.summary+'</p></div>';
+        if(r.skills&&r.skills.length)el.innerHTML+='<div style="margin-bottom:12px"><b style="text-decoration:underline;font-size:13px">SKILLS</b><p style="margin-top:4px">'+r.skills.join(' | ')+'</p></div>';
+        if(r.experience&&r.experience.length){
+            var h='<div style="margin-bottom:12px"><b style="text-decoration:underline;font-size:13px">EXPERIENCE</b>';
+            r.experience.forEach(function(ex){
+                h+='<div style="margin-top:8px"><b>'+ex.title+'</b>'+(ex.company?' at '+ex.company:'')+(ex.dates?' <i style="color:var(--txt2)">'+ex.dates+'</i>':'')+'</div>';
+                if(ex.bullets&&ex.bullets.length)h+='<ul style="margin:4px 0 0 18px;font-size:12px">'+ex.bullets.map(function(b){return '<li>'+b+'</li>'}).join('')+'</ul>';
+            });h+='</div>';el.innerHTML+=h;
+        }
+        if(r.education&&r.education.length){
+            var h='<div><b style="text-decoration:underline;font-size:13px">EDUCATION</b>';
+            r.education.forEach(function(e){h+='<p style="margin-top:4px"><b>'+e.degree+'</b>'+(e.school?' - '+e.school:'')+(e.year?' ('+e.year+')':'')+'</p>'});
+            h+='</div>';el.innerHTML+=h;
+        }
+    }
+
+    // DOWNLOADS
+    $('dlCL').addEventListener('click',function(){
+        if(!resultData)return;
+        fetch('/api/download/cover-letter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(resultData.coverLetter)})
+        .then(function(res){if(!res.ok)throw new Error('Download failed');return res.blob()})
+        .then(function(blob){dl(blob,'Cover_Letter.docx')})
+        .catch(function(e){alert('Download error: '+e.message)});
+    });
+    $('dlRes').addEventListener('click',function(){
+        if(!resultData)return;
+        fetch('/api/download/improved-resume',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(resultData.improvedResume)})
+        .then(function(res){if(!res.ok)throw new Error('Download failed');return res.blob()})
+        .then(function(blob){dl(blob,'Improved_Resume.docx')})
+        .catch(function(e){alert('Download error: '+e.message)});
+    });
+    function dl(blob,name){
+        var u=URL.createObjectURL(blob),a=document.createElement('a');
+        a.href=u;a.download=name;document.body.appendChild(a);a.click();
+        document.body.removeChild(a);URL.revokeObjectURL(u);
+    }
+
+    // RESET
+    $('resetBtn').addEventListener('click',function(){
+        results.style.display='none';resetFile();jd.value='';
+        charCnt.textContent='0 characters';resultData=null;
+        $('impCard').style.display='';$('clCard').style.display='';$('resCard').style.display='';
+        window.scrollTo({top:0,behavior:'smooth'});
+    });
+})();
+</script>
+</body>
+</html>
