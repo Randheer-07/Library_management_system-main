@@ -1,0 +1,23 @@
+{
+  "name": "resume-iq",
+  "version": "1.0.0",
+  "description": "RESUME IQ - Smart Resume Analyzer & Cover Letter Generator with ATS scoring",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "docx": "^9.0.2",
+    "express": "^4.21.0",
+    "mammoth": "^1.8.0",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1"
+  },
+  "keywords": ["resume", "ats", "cover-letter", "analyzer"],
+  "author": "Randheer-07",
+  "license": "ISC"
+}

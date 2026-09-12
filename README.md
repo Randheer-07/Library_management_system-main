@@ -2,6 +2,8 @@
 
 Smart Resume Analyzer & Cover Letter Generator with ATS scoring.
 
+**Live Demo:** [https://resume-iq.onrender.com](https://resume-iq.onrender.com)
+
 ## Features
 
 - **ATS Compatibility Score** — Analyze your resume against job descriptions with a detailed breakdown (Keywords, Formatting, Content, Experience, Education)
@@ -35,10 +37,12 @@ RESUME IQ/
 │   │   └── docx-builder.js  # Build downloadable DOCX files
 │   ├── uploads/             # Temporary file storage (auto-cleaned)
 │   └── package.json
-└── .gitignore
+├── package.json             # Root package.json (for Render deployment)
+├── .gitignore
+└── README.md
 ```
 
-## Installation
+## Local Development
 
 ```bash
 # Clone the repository
@@ -46,18 +50,42 @@ git clone https://github.com/Randheer-07/RESUME-IQ.git
 cd RESUME-IQ
 
 # Install dependencies
-cd backend
 npm install
-```
 
-## Usage
-
-```bash
 # Start the server
 npm start
 
 # Open in browser
 http://localhost:3000
+```
+
+## Deploy to Render
+
+### Option A: Auto-Deploy from GitHub (Recommended)
+
+1. Push this repository to GitHub
+2. Go to [Render Dashboard](https://dashboard.render.com)
+3. Click **New** → **Web Service**
+4. Connect your GitHub repository: `Randheer-07/RESUME-IQ`
+5. Configure:
+   - **Name:** `resume-iq`
+   - **Runtime:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+6. Click **Create Web Service**
+7. Render will auto-deploy on every push to `main`/`master`
+
+### Option B: Manual Deploy via Render CLI
+
+```bash
+# Install Render CLI
+npm install -g @render/cli
+
+# Login
+render login
+
+# Deploy
+render deploy
 ```
 
 ## API Endpoints
@@ -74,6 +102,12 @@ http://localhost:3000
 - DOC
 - DOCX
 - TXT
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server port (Render sets this automatically) |
 
 ## License
 

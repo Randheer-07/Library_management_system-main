@@ -7,9 +7,11 @@ yarn-error.log*
 # Environment variables
 .env
 .env.local
+.env.development
+.env.test
 .env.production
 
-# Uploads (user data)
+# Uploads (user data - ephemeral on Render)
 backend/uploads/*
 !backend/uploads/.gitkeep
 
