@@ -42,8 +42,8 @@ RESUME IQ/
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/resume-iq.git
-cd resume-iq
+git clone https://github.com/Randheer-07/RESUME-IQ.git
+cd RESUME-IQ
 
 # Install dependencies
 cd backend
