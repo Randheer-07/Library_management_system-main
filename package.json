@@ -6,9 +6,8 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "start": "cd backend && npx prisma db push --skip-generate && cd .. && node backend/server.js",
-    "build": "cd frontend && npm config set allow-scripts true && npm install && npm run build",
-    "postinstall": "cd backend && npm install && npx prisma generate",
+    "start": "node backend/server.js",
+    "build": "cd backend && npm install && npx prisma generate && cd ../frontend && npm install && npm run build",
     "db:migrate": "cd backend && npx prisma migrate deploy",
     "db:seed": "cd backend && node seed.js",
     "db:push": "cd backend && npx prisma db push"
