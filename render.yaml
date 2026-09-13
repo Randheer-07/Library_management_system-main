@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: cd backend && npx prisma db push --skip-generate && cd .. && node backend/server.js
     envVars:
       - key: NODE_ENV
         value: production
