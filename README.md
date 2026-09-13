@@ -157,41 +157,59 @@ Backend: http://localhost:3000
 
 ## Deploy to Render
 
-### 1. Create PostgreSQL Database
-1. Go to [Render Dashboard](https://dashboard.render.com)
-2. Click **New** → **PostgreSQL**
-3. Name: `libflow-db`
-4. Plan: **Free**
-5. Click **Create Database**
-6. Copy the **Internal Database URL**
+### Step 1: Delete any old services
+1. Go to [Render Dashboard](https://dashboard.render.com/project/prj-d8v87qv7f7vs73b6lpsg)
+2. If there are existing services, delete them first
 
-### 2. Create Web Service
+### Step 2: Create PostgreSQL Database
+1. Click **New** → **PostgreSQL**
+2. **Name:** `libflow-db`
+3. **Database:** `libflow`
+4. **Plan:** Free
+5. Click **Create Database**
+6. Wait for it to be ready, then copy the **Internal Database URL**
+
+### Step 3: Create Web Service
 1. Click **New** → **Web Service**
-2. Connect GitHub: `Randheer-07/Library_management_system-main`
-3. Configure:
+2. Connect your GitHub repository: `Randheer-07/Library_management_system-main`
+3. Configure these settings exactly:
    - **Name:** `libflow`
    - **Runtime:** `Node`
    - **Build Command:** `npm install && npm run build`
    - **Start Command:** `npm start`
    - **Plan:** Free
+4. Click **Advanced** → Add these **Environment Variables**:
 
-### 3. Set Environment Variables
 | Key | Value |
 |-----|-------|
 | `NODE_ENV` | `production` |
-| `DATABASE_URL` | *(paste Internal Database URL)* |
-| `JWT_SECRET` | *(generate a random string)* |
+| `DATABASE_URL` | *(paste Internal Database URL from Step 2)* |
+| `JWT_SECRET` | *(any random string, e.g. `libflow-prod-secret-2024-xkcd`)  |
 | `JWT_EXPIRES_IN` | `7d` |
+| `CORS_ORIGIN` | *(leave empty for now, update after deploy)* |
 
-### 4. Deploy
-Click **Create Web Service** → Render will build and deploy automatically.
+5. Click **Create Web Service**
+6. Wait for the first deploy to complete
 
-### 5. Run Database Migration & Seed
-After deployment, go to **Shell** tab in Render:
+### Step 4: Seed the Database
+1. After deployment succeeds, go to the **Shell** tab in your Render web service
+2. Run:
 ```bash
-npx prisma migrate deploy
-node seed.js
+cd backend && node seed.js
 ```
+3. This creates demo accounts and sample data
+
+### Step 5: Update CORS_ORIGIN
+1. Go to your service **Environment** tab
+2. Update `CORS_ORIGIN` to your actual Render URL (e.g., `https://libflow.onrender.com`)
+3. Trigger a manual redeploy
+
+### Demo Accounts
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@library.com | admin123 |
+| Librarian | librarian@library.com | lib123 |
+| Member | john@example.com | member123 |
 
 ## License
 
