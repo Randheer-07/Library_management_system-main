@@ -1,135 +1,84 @@
+require('dotenv').config();
 const express = require('express');
-const multer = require('multer');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
-const fs = require('fs');
-const { parseResume } = require('./utils/resume-parser');
-const { calculateATSScore, getImprovements } = require('./utils/ats-scorer');
-const { generateCoverLetter } = require('./utils/cover-letter');
-const { generateImprovedResume } = require('./utils/resume-improver');
-const { buildCoverLetterDocx, buildResumeDocx } = require('./utils/docx-builder');
+const { port, corsOrigin, nodeEnv } = require('./config');
+const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+// Security
+app.use(helmet({ contentSecurityPolicy: false }));
 
-// Multer config
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadsDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
 });
+app.use('/api', limiter);
 
-const upload = multer({
-    storage,
-    limits: { fileSize: 10 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        const allowed = ['.pdf', '.doc', '.docx', '.txt'];
-        const ext = path.extname(file.originalname).toLowerCase();
-        if (allowed.includes(ext)) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only PDF, DOC, DOCX, TXT files are allowed'));
-        }
+// CORS
+const allowedOrigins = nodeEnv === 'production'
+  ? [process.env.CORS_ORIGIN, process.env.RENDER_EXTERNAL_URL].filter(Boolean)
+  : [corsOrigin];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.length === 0) {
+      callback(null, true);
+    } else {
+      callback(null, true);
     }
-});
+  },
+  credentials: true,
+}));
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Body parsing
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Serve frontend files
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+// Static files for frontend
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'dist')));
 
-// ============ ANALYZE ENDPOINT ============
-app.post('/api/analyze', upload.single('resume'), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'Please upload a resume file.' });
-        }
+// API routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/books', require('./routes/books'));
+app.use('/api/authors', require('./routes/authors'));
+app.use('/api/categories', require('./routes/categories'));
+app.use('/api/collections', require('./routes/collections'));
+app.use('/api/members', require('./routes/members'));
+app.use('/api/loans', require('./routes/loans'));
+app.use('/api/reservations', require('./routes/reservations'));
+app.use('/api/fines', require('./routes/fines'));
+app.use('/api/dashboard', require('./routes/dashboard'));
 
-        const jobDescription = req.body.jobDescription;
-        if (!jobDescription || jobDescription.trim().length < 20) {
-            return res.status(400).json({ error: 'Please provide a valid job description (at least 20 characters).' });
-        }
-
-        // 1. Parse resume
-        const resumeData = await parseResume(req.file.path, req.file.mimetype);
-
-        // 2. Calculate ATS score
-        const atsResult = calculateATSScore(resumeData, jobDescription);
-
-        // 3. Get improvements
-        const improvements = getImprovements(resumeData, jobDescription, atsResult);
-
-        // 4. Generate cover letter
-        const coverLetter = generateCoverLetter(resumeData, jobDescription);
-
-        // 5. Generate improved resume
-        const improvedResume = generateImprovedResume(resumeData, jobDescription, improvements);
-
-        // Clean up uploaded file
-        try { fs.unlinkSync(req.file.path); } catch (e) {}
-
-        return res.json({
-            success: true,
-            data: {
-                resumeData,
-                atsScore: atsResult.score,
-                atsBreakdown: atsResult.breakdown,
-                improvements,
-                coverLetter,
-                improvedResume
-            }
-        });
-
-    } catch (err) {
-        console.error('ANALYSIS ERROR:', err);
-        if (req.file) {
-            try { fs.unlinkSync(req.file.path); } catch (e) {}
-        }
-        return res.status(500).json({ error: 'Failed to analyze resume. ' + err.message });
-    }
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ============ DOWNLOAD COVER LETTER ============
-app.post('/api/download/cover-letter', async (req, res) => {
-    try {
-        const data = req.body;
-        if (!data || !data.candidateName) {
-            return res.status(400).json({ error: 'No cover letter data provided.' });
-        }
-        const buffer = await buildCoverLetterDocx(data);
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=Cover_Letter.docx');
-        res.send(Buffer.from(buffer));
-    } catch (err) {
-        console.error('COVER LETTER DOWNLOAD ERROR:', err);
-        return res.status(500).json({ error: 'Failed to generate cover letter.' });
-    }
+// Serve frontend for all non-API routes (SPA support)
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'dist', 'index.html'));
+  }
 });
 
-// ============ DOWNLOAD IMPROVED RESUME ============
-app.post('/api/download/improved-resume', async (req, res) => {
-    try {
-        const data = req.body;
-        if (!data || !data.name) {
-            return res.status(400).json({ error: 'No resume data provided.' });
-        }
-        const buffer = await buildResumeDocx(data);
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', 'attachment; filename=Improved_Resume.docx');
-        res.send(Buffer.from(buffer));
-    } catch (err) {
-        console.error('RESUME DOWNLOAD ERROR:', err);
-        return res.status(500).json({ error: 'Failed to generate improved resume.' });
-    }
+// Error handler
+app.use(errorHandler);
+
+const server = app.listen(port, '0.0.0.0', () => {
+  console.log(`Library Management System running on port ${port}`);
+  console.log(`Environment: ${nodeEnv}`);
 });
 
-// ============ START ============
-app.listen(PORT, '0.0.0.0', () => {
-    console.log('RESUME IQ running at http://localhost:' + PORT);
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
+  server.close(() => process.exit(1));
 });
+
+module.exports = app;

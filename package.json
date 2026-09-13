@@ -1,23 +1,19 @@
 {
-  "name": "resume-iq",
+  "name": "library-management-system",
   "version": "1.0.0",
-  "description": "RESUME IQ - Smart Resume Analyzer & Cover Letter Generator with ATS scoring",
-  "main": "backend/server.js",
-  "scripts": {
-    "start": "node backend/server.js"
-  },
+  "description": "LibFlow - Modern Library Management System",
   "engines": {
     "node": ">=18.0.0"
   },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "docx": "^9.0.2",
-    "express": "^4.21.0",
-    "mammoth": "^1.8.0",
-    "multer": "^1.4.5-lts.1",
-    "pdf-parse": "^1.1.1"
+  "scripts": {
+    "start": "node backend/server.js",
+    "build": "cd frontend && npm install && npm run build",
+    "postinstall": "cd backend && npm install && npx prisma generate",
+    "db:migrate": "cd backend && npx prisma migrate deploy",
+    "db:seed": "cd backend && node seed.js",
+    "db:push": "cd backend && npx prisma db push"
   },
-  "keywords": ["resume", "ats", "cover-letter", "analyzer"],
+  "keywords": ["library", "management", "prisma", "react"],
   "author": "Randheer-07",
   "license": "ISC"
 }

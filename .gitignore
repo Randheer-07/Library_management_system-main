@@ -1,41 +1,24 @@
-# Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Environment variables
 .env
-.env.local
-.env.development
-.env.test
-.env.production
-
-# Uploads (user data - ephemeral on Render)
-backend/uploads/*
-!backend/uploads/.gitkeep
-
-# OS files
+.env.*
+!.env.example
+uploads/*
+!uploads/.gitkeep
+logs/
+*.log
+dist/
+build/
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# Logs
-*.log
-logs/
-
-# Temp files
 tmp/
 temp/
 *.tmp
-
-# Build output
-dist/
-build/
+frontend/node_modules/
+frontend/dist/
+backend/node_modules/
