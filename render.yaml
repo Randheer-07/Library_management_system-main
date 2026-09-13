@@ -3,8 +3,8 @@ services:
     name: libflow
     runtime: node
     plan: free
-    buildCommand: npm install && cd backend && npm install && npx prisma generate && cd ../frontend && npm install && npm run build
-    startCommand: node backend/server.js
+    buildCommand: cd backend && npm install && npx prisma generate && cd ../frontend && npm install --include=dev && npm run build
+    startCommand: cd backend && npx prisma migrate deploy && node server.js
     envVars:
       - key: NODE_ENV
         value: production
